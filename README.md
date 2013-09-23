@@ -1,7 +1,7 @@
 # Ruby
 
 ## Decoder Ring
-#### Ruby v1.9.3
+##### Ruby v1.9.3
 
 My solution for the puzzle at http://www.puzzlenode.com/puzzles/12-secret-messages
 
