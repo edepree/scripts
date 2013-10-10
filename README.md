@@ -3,7 +3,12 @@
 ## Decoder Ring
 ##### Ruby v1.9.3
 
-My solution for the puzzle at http://www.puzzlenode.com/puzzles/12-secret-messages
+A solution for the puzzle at http://www.puzzlenode.com/puzzles/12-secret-messages
+
+## Number Converter
+##### Ruby v1.9.3
+
+A tool to translate numbers from Arabic numerals to English words (123 to 'one hundred and twenty three')
 
 # Python
 
