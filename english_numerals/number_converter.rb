@@ -49,14 +49,14 @@ TENS_DIGIT = {"1" => "ten",
               "0" => ""}
 
 SPECIAL_DIGIT = {"11" => "eleven",
-                  "12" => "twelve",
-                  "13" => "thirteen",
-                  "14" => "fourteen",
-                  "15" => "fifteen",
-                  "16" => "sixteen",
-                  "17" => "seventeen",
-                  "18" => "eighteen",
-                  "19" => "nineteen"}
+                 "12" => "twelve",
+                 "13" => "thirteen",
+                 "14" => "fourteen",
+                 "15" => "fifteen",
+                 "16" => "sixteen",
+                 "17" => "seventeen",
+                 "18" => "eighteen",
+                 "19" => "nineteen"}
 
 # --------------------
 # Convert a numeric period into its English representation.
