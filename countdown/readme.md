@@ -15,7 +15,7 @@ According to Brian Candler in the Ruby Quiz book, Countdown is a British quiz sh
 * List of numbers 100, 5, 5, 2, 6, and 8.
 * Target 522.
 
-##### Solutions:
+###### Solutions:
 
 * (5 * 100) + ((5 + 6) * 2)
 * (100 + 6) * 5 - 8
