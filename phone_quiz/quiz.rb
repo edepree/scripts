@@ -102,7 +102,9 @@ def generate_string_combinations(phone_number)
 end
 
 # --------------------
-#
+# Check if input string is a valid dictionary word over two characters in length.
+# For valid words recursively search the rest of the string for more words.
+# If all words are exhausted then increase search string size.
 # --------------------
 def generate_words(unused_characters)
     # Complete word found
@@ -119,10 +121,6 @@ def generate_words(unused_characters)
         if possible_word.length > 2
 
             if WORDLIST.include? possible_word
-
-                if possible_word.length == 7
-                    puts "#{possible_word}"
-                end
 
                 found_word = generate_words(unused_characters[(i+1)..(unused_characters.length)])
 
