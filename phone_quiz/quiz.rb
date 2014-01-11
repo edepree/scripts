@@ -63,6 +63,9 @@ def read_arguments()
     end
 end
 
+# --------------------
+# Read in dictionary file to an array and standardize case.
+# --------------------
 def load_wordlist(file_path)
     file_buffer = Array.new
 
@@ -89,8 +92,7 @@ end
 def generate_string_combinations(phone_number)
     word_array = Array.new
 
-    phone_number = phone_number.gsub(/[.-]/, '')
-    phone_number.strip!
+    phone_number = phone_number.gsub(/[.-]/, '').strip
 
     phone_number.each_char do |i|
         word_array << NUMBERS[i]
@@ -107,37 +109,29 @@ end
 # If all words are exhausted then increase search string size.
 # --------------------
 def generate_words(unused_characters)
-    # Complete word found
     if unused_characters.length == 0
         return true
     end
 
-    i = 0
-
-    while i < unused_characters.length do
+    for i in 0..unused_characters.length
 
         possible_word = unused_characters[0..i]
 
-        if possible_word.length > 2
+        if possible_word.length > 2 and WORDLIST.include? possible_word
 
-            if WORDLIST.include? possible_word
+            found_word = generate_words(unused_characters[(i+1)..-1])
 
-                found_word = generate_words(unused_characters[(i+1)..(unused_characters.length)])
-
-                if found_word
-                    return true
-                end
+            if found_word
+                return true
             end
         end
-
-        i += 1
     end
 
     return false
 end
 
 # --------------------
-# Program Flow
+# Program Flow.
 # --------------------
 read_arguments()
 WORDLIST = load_wordlist(OPTIONS[:word_list])
