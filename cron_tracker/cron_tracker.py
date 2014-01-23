@@ -32,8 +32,12 @@ class CronListener:
     def __init__(self):
         # Parse Arguments
         parser = argparse.ArgumentParser(description="Crontab Tracking Tool")
-        parser.add_argument("-f", metavar='FILE', dest="password_file", type=file, default="/etc/passwd", help="Password file to use.")
-        parser.add_argument("-s", metavar='SLEEP TIME', dest="sleep_time", type=int, default=30, help="Time to sleep between checking cron tabs.")
+
+        parser.add_argument("-f", metavar='FILE', dest="password_file", type=file, default="/etc/passwd",
+            help="Password file to use.")
+
+        parser.add_argument("-s", metavar='SLEEP TIME', dest="sleep_time", type=int, default=30,
+            help="Time to sleep between checking cron tabs.")
 
         try:
             args = parser.parse_args()
