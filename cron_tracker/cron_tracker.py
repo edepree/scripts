@@ -24,45 +24,67 @@
 
 # ---------- SYSTEM IMPORTS ----------
 import argparse
+import curses
+import datetime
+import signal
 from crontab import CronTab
 from time import sleep
 
 class CronListener:
 
+    command_line_arguments = None
+    screen = None
+
     def __init__(self):
-        # Parse Arguments
-        parser = argparse.ArgumentParser(description="Crontab Tracking Tool")
+        self.command_line_arguments = self.parse_arguments()
+        signal.signal(signal.SIGINT, self.exit_handler)
+
+    def parse_arguments(self):
+        """Parse command line arguments."""
+        parser = argparse.ArgumentParser(description="Crontab Tracking Tool. This program needs to be run " +
+            "with with elevated permissions to access all the crontabs")
 
         parser.add_argument("-f", metavar='FILE', dest="password_file", type=file, default="/etc/passwd",
             help="Password file to use.")
 
         parser.add_argument("-s", metavar='SLEEP TIME', dest="sleep_time", type=int, default=30,
-            help="Time to sleep between checking cron tabs.")
+            help="Time to sleep between checking crontabs.")
 
         try:
             args = parser.parse_args()
+            return args
         except IOError, e:
             print "There was a File IO error:\n{}".format(e)
             exit(0)
 
-        # Process Tabs
+    def monitor_tabs(self, screen):
+        """Main flow for the application."""
         existing_tabs = {}
+        self.screen = screen
+
+        self.screen.scrollok(True)
+
+        curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+
+        self.screen.addstr("Connection Tracker\n", curses.A_STANDOUT)
 
         while True:
+            self.screen.addstr("\nRefreshed at {}\n".format(datetime.datetime.now()), curses.color_pair(2))
 
-            users = self.read_usernames(args.password_file)
+            users = self.read_usernames(self.command_line_arguments.password_file)
 
             # Print and update system tabs
-            current_system_tabs = self.retrieve_system_crontab()
+            current_system_tabs = self.retrieve_crontab("SYSTEM")
             existing_system_tabs = set()
 
-            self.print_changed_tabs('SYSTEM', current_system_tabs, existing_system_tabs)
+            self.print_changed_tabs("SYSTEM", current_system_tabs, existing_system_tabs)
 
-            existing_tabs['SYSTEM'] = current_system_tabs
+            existing_tabs["SYSTEM"] = current_system_tabs
 
             # Print and update user tabs
             for user in users:
-                current_user_tabs = self.retrieve_user_crontab(user)
+                current_user_tabs = self.retrieve_crontab(user)
                 existing_user_tabs = set()
 
                 if user in existing_tabs:
@@ -72,8 +94,9 @@ class CronListener:
 
                 existing_tabs[user] = current_user_tabs
 
-            print "-"*30
-            sleep(args.sleep_time)
+            screen.refresh()
+            sleep(self.command_line_arguments.sleep_time)
+
 
     def read_usernames(self, password_file):
         """Read a list of usernames from the passwd file in Linux."""
@@ -85,23 +108,16 @@ class CronListener:
 
         return usernames
 
-    def retrieve_system_crontab(self):
-        """Retrieve the jobs in the system crontab."""
-        jobs = set()
-        system_tab = CronTab()
-
-        for job in system_tab:
-            if not str(job).startswith("#"):
-                jobs.add(str(job))
-
-        return jobs
-
-    def retrieve_user_crontab(self, username):
+    def retrieve_crontab(self, username):
         """Retrieve the jobs in a users crontab."""
         jobs = set()
-        user_tab = CronTab(username)
 
-        for job in user_tab:
+        if username == "SYSTEM":
+            tab = CronTab()
+        else:
+            tab = CronTab(username)
+
+        for job in tab:
             if not str(job).startswith("#"):
                 jobs.add(str(job))
 
@@ -112,11 +128,15 @@ class CronListener:
         change_tabs = current_tabs - existing_tabs
 
         if change_tabs:
-            print "New tabs for {}".format(username)
+            self.screen.addstr("User: {}\n".format(username), curses.color_pair(1))
 
             for tab in change_tabs:
-                print tab
+                self.screen.addstr("{}\n".format(tab))
 
+    def exit_handler(self, signal, frame):
+        """Override for keyboard interrupts to suppress stack track to terminal."""
+        exit(-1)
 
 if __name__ == '__main__':
-    CronListener()
+    listener = CronListener()
+    curses.wrapper(listener.monitor_tabs)
