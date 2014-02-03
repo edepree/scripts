@@ -27,17 +27,19 @@ import argparse
 import curses
 import datetime
 import signal
-from crontab import CronTab
+import subprocess
 from time import sleep
 
 class CronListener:
 
+    parser = None
     command_line_arguments = None
     screen = None
 
     def __init__(self):
         self.command_line_arguments = self.parse_arguments()
         signal.signal(signal.SIGINT, self.exit_handler)
+        self.parser = CronParser()
 
     def parse_arguments(self):
         """Parse command line arguments."""
@@ -113,13 +115,14 @@ class CronListener:
         jobs = set()
 
         if username == "SYSTEM":
-            tab = CronTab()
+            tab = set()
         else:
-            tab = CronTab(username)
+            tab = self.parser.get_user_tab(username)
 
-        for job in tab:
-            if not str(job).startswith("#"):
-                jobs.add(str(job))
+        if tab:
+            for job in tab:
+                if str(job).strip() and not str(job).startswith("#"):
+                    jobs.add(str(job))
 
         return jobs
 
@@ -136,6 +139,24 @@ class CronListener:
     def exit_handler(self, signal, frame):
         """Override for keyboard interrupts to suppress stack track to terminal."""
         exit(-1)
+
+
+class CronParser:
+    """Parsere for reading crontabs."""
+    def get_system_tab(self):
+        """Read in the system crontab."""
+        None
+
+    def get_user_tab(self, username):
+        """Read in a user's crontab using system commands."""
+        try:
+            cmnd_output = subprocess.check_output(["crontab", "-l", "-u", username], stderr=subprocess.STDOUT);
+            return cmnd_output.split("\n")
+        except subprocess.CalledProcessError as exc:
+            if not 'no crontab for' in exc.output:
+                None
+                # TODO: Add some error handeling
+
 
 if __name__ == '__main__':
     listener = CronListener()
