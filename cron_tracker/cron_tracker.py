@@ -26,8 +26,10 @@
 import argparse
 import curses
 import datetime
+import logging
 import signal
-import subprocess
+
+from subprocess import check_output, CalledProcessError, STDOUT
 from time import sleep
 
 class CronListener:
@@ -39,6 +41,8 @@ class CronListener:
     def __init__(self):
         self.command_line_arguments = self.parse_arguments()
         signal.signal(signal.SIGINT, self.exit_handler)
+
+        logging.basicConfig(filename=self.command_line_arguments.log, level=logging.ERROR)
         self.parser = CronParser()
 
     def parse_arguments(self):
@@ -46,11 +50,14 @@ class CronListener:
         parser = argparse.ArgumentParser(description="Crontab Tracking Tool. This program needs to be run " +
             "with with elevated permissions to access all the crontabs")
 
-        parser.add_argument("-f", metavar='FILE', dest="password_file", type=file, default="/etc/passwd",
+        parser.add_argument("-f", metavar="FILE", dest="password_file", type=file, default="/etc/passwd",
             help="Password file to use.")
 
-        parser.add_argument("-s", metavar='SLEEP TIME', dest="sleep_time", type=int, default=30,
+        parser.add_argument("-s", metavar="SLEEP TIME", dest="sleep_time", type=int, default=30,
             help="Time to sleep between checking crontabs.")
+
+        parser.add_argument("-l", metavar="LOG LOCATION", dest="log", default="/tmp/cron_tracker.log",
+            help="Log location for application.")
 
         try:
             args = parser.parse_args()
@@ -99,7 +106,6 @@ class CronListener:
             screen.refresh()
             sleep(self.command_line_arguments.sleep_time)
 
-
     def read_usernames(self, password_file):
         """Read a list of usernames from the passwd file in Linux."""
         usernames = set()
@@ -107,6 +113,8 @@ class CronListener:
         # Add each user on the system to an array
         for line in password_file:
             usernames.add(line.split(":")[0])
+
+        logging.info(usernames)
 
         return usernames
 
@@ -150,12 +158,11 @@ class CronParser:
     def get_user_tab(self, username):
         """Read in a user's crontab using system commands."""
         try:
-            cmnd_output = subprocess.check_output(["crontab", "-l", "-u", username], stderr=subprocess.STDOUT);
+            cmnd_output = check_output(["crontab", "-l", "-u", username], stderr=STDOUT);
             return cmnd_output.split("\n")
-        except subprocess.CalledProcessError as exc:
+        except CalledProcessError as exc:
             if not 'no crontab for' in exc.output:
-                None
-                # TODO: Add some error handeling
+                logging.critical(exc.output)
 
 
 if __name__ == '__main__':
