@@ -80,7 +80,7 @@ if __name__ == '__main__':
     parser.add_argument("-a", dest="address", default="localhost", help="Address [Default: localhost]")
     parser.add_argument("-p", dest="port", type=int, default=5000, help="Port Number [Default: 5000]")
     parser.add_argument("-b", dest="buffer", type=int, default=4096, help="Buffer Size [Default: 4096]")
-    parser.add_argument('-v', dest="verbosity", action='count', default=0, help="Verboseness of logging. Add multiple 'v' to increase verbosity")
+    parser.add_argument('-v', dest="verbosity", action='count', default=0, help="Increase verboseness of logging.")
     parser.add_argument("mode", help="Specify if this the the 'client' or 'server'")
 
     args = parser.parse_args()
