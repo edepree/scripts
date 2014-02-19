@@ -9,12 +9,12 @@ A tool that pulls the connections from netstat on the local PC. A list of the co
 * Connection will scroll off the terminal if they overflow.
 
 # cron_tracker.py
-##### Python v2.7.3
+##### Python v2.7.5
 
 A tool that pulls cron tabs for all user and tracks how they change over time to the console. Usage information can be found with the following command: `cron_tracker.py --help`. This program needs to be executed with elevated privileges.
 
 # udp_echo.py
-##### Python v2.7.3
+##### Python v2.7.5
 
 A simple UDP echo server/client.
 
