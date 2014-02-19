@@ -26,7 +26,6 @@ import argparse
 from socket import *
 
 class Server:
-
     def run_server(self, address, port, buffer):
         """Run the echo server till it's terminated"""
 
@@ -47,9 +46,8 @@ class Server:
             s.sendto(data, addr)
 
 class Client:
-
     def run_client(self, address, port, buffer):
-        """Run the echo server till it's terminated"""
+        """Run the echo client till it's terminated"""
 
         logging.debug("Client connecting to [{}] on port [{}]".format(address, port))
 
@@ -71,7 +69,7 @@ class Client:
                 data = data.strip()
 
                 logging.debug("Client received [{}] from [{}]".format(data, addr))
-                print data
+                print(data)
 
 if __name__ == '__main__':
     # Command Line Arguments
@@ -90,7 +88,6 @@ if __name__ == '__main__':
 
     if args.verbosity > 5:
         logLevel = 10
-
     elif args.verbosity > 0:
         logLevel = logLevel - (10 * (args.verbosity - 1))
 
@@ -104,11 +101,9 @@ if __name__ == '__main__':
         logging.debug("Launching Client")
         serverclient = Client()
         serverclient.run_client(args.address, args.port, args.buffer)
-
     elif args.mode.lower() == "server":
         logging.debug("Launching Server")
         server = Server()
         server.run_server(args.address, args.port, args.buffer)
-
     else:
         logging.error("The mode of [{}] is undefined".format(args.mode))
