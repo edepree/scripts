@@ -84,12 +84,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Instantiate Logger
-    logLevel = 50
+    logLevel = 40
 
-    if args.verbosity > 5:
+    if args.verbosity == 1:
+        logLevel = 30
+    elif args.verbosity == 2:
+        logLevel = 20
+    elif args.verbosity == 3 or args.verbosity > 3:
         logLevel = 10
-    elif args.verbosity > 0:
-        logLevel = logLevel - (10 * (args.verbosity - 1))
 
     logging.basicConfig(format="%(asctime)-19s %(levelname)-8s %(message)s", datefmt='%Y-%m-%d %H:%M:%S', level=logLevel)
 
