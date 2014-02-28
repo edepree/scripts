@@ -21,3 +21,10 @@ A simple UDP echo server/client.
 * See all options: `python udp_echo.ph -h`
 * Launch default server: `python udp_echo.ph server`
 * Launch default client: `python udp_echo.ph client`
+
+# dns_lite.py
+##### Python v2.7.5
+
+A simple DNS server.
+
+* See all options: `python udp_echo.ph -h`
